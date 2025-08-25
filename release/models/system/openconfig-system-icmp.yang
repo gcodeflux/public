@@ -1,0 +1,145 @@
+module openconfig-system-icmp {
+
+  yang-version "1";
+
+  // namespace
+  namespace "http://openconfig.net/yang/system-icmp";
+
+  prefix "oc-sys-icmp";
+
+  // import some basic types
+  import openconfig-inet-types { prefix oc-inet; }
+  import openconfig-yang-types { prefix oc-yang; }
+  import ietf-interfaces { prefix if; }
+  import openconfig-interfaces { prefix oc-if; }
+
+  // meta
+  organization "OpenConfig working group";
+
+  contact
+    "OpenConfig working group
+    netopenconfig@googlegroups.com";
+
+  description
+    "This module defines configuration and operational state data for
+    ICMP extensions as specified in RFC 5837, to be used under the
+    openconfig-system module.";
+
+  revision "2025-09-25" {
+    description
+      "Initial release of the ICMP extensions model.";
+    reference "RFC 5837: ICMP Extensions for Interface and Next-Hop Identification";
+  }
+
+  // grouping statements
+  grouping icmp-extensions-top {
+    container icmp-extensions {
+      description "Top-level container for ICMP extensions defined by RFC 5837.";
+      
+      container config {
+        description "Configuration data for ICMP extensions.";
+        leaf enable-icmp-error-ext {
+          type boolean;
+          default false;
+          description
+            "Enables or disables the inclusion of the Interface Information
+            Object in generated ICMP messages.";
+        }
+      }
+      
+      container state {
+        config false;
+        description "Operational state data for ICMP extensions.";
+        leaf enable-icmp-error-ext {
+          type boolean;
+          description "Enables or disables the inclusion of the Interface Information Object in generated ICMP messages.";
+        }
+        leaf total-messages-sent {
+          type oc-yang:counter64;
+          description
+            "The total number of ICMP messages sent with the RFC 5837 extension.";
+        }
+        leaf total-enqueued-pkts {
+          type oc-yang:counter64;
+          description
+            "Total number of packets enqueued for processing.";
+        }
+        leaf total-dequeued-pkts {
+          type oc-yang:counter64;
+          description
+            "Total number of packets dequeued for processing.";
+        }
+        leaf total-queue-dropped-pkts {
+          type oc-yang:counter64;
+          description
+            "Total number of packets dropped from the queue.";
+        }
+      }
+
+      container interface-information {
+        config false;
+        description
+          "Operational state data for the Interface Information Object,
+          providing details for each hop along a path.";
+        list interface-info {
+          key "index";
+          description
+            "List of Interface Information Objects, one for each hop.";
+          leaf index {
+            type uint32;
+            description "A unique index for the list entry.";
+          }
+          leaf inc-interface {
+            type leafref {
+              path "/if:interfaces/if:interface/if:name";
+            }
+            description "The name of the incoming interface.";
+          }
+          leaf inc-sub-intf {
+            type leafref {
+              path "/oc-if:interfaces/oc-if:interface[oc-if:name=current()/../inc-interface]/oc-if:subinterfaces/oc-if:subinterface/oc-if:index";
+            }
+            description "The index of the incoming sub-interface.";
+          }
+          leaf inc-sub-intf-ifindex {
+            type if:if-index;
+            description "The ifIndex of the incoming sub-interface.";
+          }
+          leaf outg-interface {
+            type leafref {
+              path "/if:interfaces/if:interface/if:name";
+            }
+            description "The name of the outgoing interface.";
+          }
+          leaf outg-sub-intf {
+            type leafref {
+              path "/oc-if:interfaces/oc-if:interface[oc-if:name=current()/../outg-interface]/oc-if:subinterfaces/oc-if:subinterface/oc-if:index";
+            }
+            description "The index of the outgoing sub-interface.";
+          }
+          leaf outg-sub-intf-ifindex {
+            type if:if-index;
+            description "The ifIndex of the outgoing sub-interface.";
+          }
+          leaf next-hop-address {
+            type oc-inet:ip-address;
+            description "The IP address of the next hop.";
+          }
+          leaf incoming-mtu {
+            type uint16;
+            units "bytes";
+            description "The MTU of the incoming interface.";
+          }
+          leaf outgoing-mtu {
+            type uint16;
+            units "bytes";
+            description "The MTU of the outgoing interface.";
+          }
+        }
+      }
+    }
+  }
+
+  // data definition statements
+  uses icmp-extensions-top;
+}
