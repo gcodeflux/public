@@ -1,0 +1,196 @@
+module openconfig-system-icmp-ext {
+  yang-version "1.1";
+  namespace "http://openconfig.net/yang/system-icmp";
+  prefix "oc-sys-icmp";
+
+  import openconfig-system {
+    prefix oc-sys;
+  }
+  import openconfig-yang-types {
+    prefix oc-yang;
+  }
+
+  organization
+    "OpenConfig working group";
+
+  contact
+    "OpenConfig working group
+    netopenconfig@googlegroups.com";
+
+  description
+    "This module defines configuration and operational state data for
+    ICMP extensions as specified in RFC 5837, to be used under the
+    openconfig-system module.";
+
+  revision "2025-09-04" {
+    description
+      "Initial release of the ICMP extensions model.";
+    reference "RFC 5837: ICMP Extensions for Interface and Next-Hop Identification";
+  }
+
+  augment "/oc-sys:system/oc-sys:icmp" {
+    description
+      "Adds ICMP error message configuration and state.";
+
+    container icmp-error {
+      description
+        "Configuration and state for ICMP error messages.";
+
+      container config {
+        description
+          "Configuration parameters for ICMP error extensions.";
+        leaf enabled {
+          type boolean;
+          default "true";
+          description
+            "Enables the generation of ICMP error extention messages.";
+        }
+        leaf enabled-egress-intf {
+          type boolean;
+          description
+            "Includes the egress interface in the ICMP error message payload.";
+        }
+        leaf enabled-egress-intf-index {
+          type boolean;
+          description
+            "Includes the egress interface index in the ICMP error message payload.";
+        }
+        leaf enabled-ingress-intf {
+          type boolean;
+          description
+            "Includes the ingress interface in the ICMP error message payload.";
+        }
+        leaf enabled-ingress-intf-index {
+          type boolean;
+          description
+            "Includes the ingress interface index in the ICMP error message payload.";
+        }
+        leaf enabled-ingress-mtu {
+          type boolean;
+          description
+            "Includes the ingress interface MTU in the ICMP error message payload.";
+        }
+        leaf enabled-egress-mtu {
+          type boolean;
+          description
+            "Includes the egress interface MTU in the ICMP error message payload.";
+        }
+      }
+
+      container state {
+        config false;
+        description
+          "Operational state for ICMP error messages, including counters.";
+        leaf enabled {
+          type boolean;
+          description
+            "Operational state of ICMP error message generation.";
+        }
+        leaf enabled-egress-intf {
+          type boolean;
+          description
+            "Operational state of egress interface inclusion.";
+        }
+        leaf enabled-egress-intf-index {
+          type boolean;
+          description
+            "Operational state of egress interface index inclusion.";
+        }
+        leaf enabled-ingress-intf {
+          type boolean;
+          description
+            "Operational state of ingress interface inclusion.";
+        }
+        leaf enabled-ingress-intf-index {
+          type boolean;
+          description
+            "Operational state of ingress interface index inclusion.";
+        }
+        leaf enabled-ingress-mtu {
+          type boolean;
+          description
+            "Operational state of ingress MTU inclusion.";
+        }
+        leaf enabled-egress-mtu {
+          type boolean;
+          description
+            "Operational state of egress MTU inclusion.";
+        }
+        leaf next-hop-address {
+          type boolean;
+          description
+            "Indicates if the next-hop address is included in the ICMP error message.";
+        }
+        leaf total-messages-sent {
+          type oc-yang:counter64;
+          description
+            "Total number of ICMP error messages sent.";
+        }
+        leaf total-error-pkts {
+          type oc-yang:counter64;
+          description
+            "Total number of packets that caused an ICMP error message to be sent.";
+        }
+        leaf total-discard-pkts {
+          type oc-yang:counter64;
+          description
+            "Total number of packets that were discarded due to an error, but no ICMP error message was sent.";
+        }
+      }
+
+      container extension {
+        description
+          "Additional ICMP error message extensions.";
+        container config {
+          description
+            "Configuration for extended ICMP parameters.";
+          leaf enable-egress-sub-intf {
+            type boolean;
+            description
+              "Enables the inclusion of egress sub-interface information.";
+          }
+          leaf enable-egress-sub-intf-index {
+            type boolean;
+            description
+              "Enables the inclusion of egress sub-interface index.";
+          }
+          leaf enable-ingress-sub-intf {
+            type boolean;
+            description
+              "Enables the inclusion of ingress sub-interface information.";
+          }
+          leaf enable-ingress-sub-intf-index {
+            type boolean;
+            description
+              "Enables the inclusion of ingress sub-interface index.";
+          }
+        }
+        container state {
+          config false;
+          description
+            "Operational state for extended ICMP parameters.";
+          leaf enable-egress-sub-intf {
+            type boolean;
+            description
+              "Operational state of egress sub-interface inclusion.";
+          }
+          leaf enable-egress-sub-intf-index {
+            type boolean;
+            description
+              "Operational state of egress sub-interface index inclusion.";
+          }
+          leaf enable-ingress-sub-intf {
+            type boolean;
+            description
+              "Operational state of ingress sub-interface inclusion.";
+          }
+          leaf enable-ingress-sub-intf-index {
+            type boolean;
+            description
+              "Operational state of ingress sub-interface index inclusion.";
+          }
+        }
+      }
+    }
+  }
+}
