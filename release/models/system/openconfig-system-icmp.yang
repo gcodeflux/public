@@ -1,5 +1,6 @@
 module openconfig-system-icmp-ext {
-  yang-version "1.1";
+  yang-version "1.0";
+
   namespace "http://openconfig.net/yang/system-icmp";
   prefix "oc-sys-icmp";
 
@@ -19,178 +20,132 @@ module openconfig-system-icmp-ext {
 
   description
     "This module defines configuration and operational state data for
-    ICMP extensions as specified in RFC 5837, to be used under the
-    openconfig-system module.";
+    ICMP extensions as specified in RFC 5837 (ICMP Extensions for 
+    Interface and Next-Hop Identification). This module augments the 
+    openconfig-system ICMP structure.";
 
-  revision "2025-09-04" {
+  revision "2025-09-15" {
     description
       "Initial release of the ICMP extensions model.";
     reference "RFC 5837: ICMP Extensions for Interface and Next-Hop Identification";
   }
 
-  augment "/oc-sys:system/oc-sys:icmp" {
-    description
-      "Adds ICMP error message configuration and state.";
+  // --- Grouping for the Core ICMP Error Feature Flags (Used by both Config and State) ---
+  
+  grouping icmp-error-flags {
+    description 
+      "The set of boolean flags controlling which ICMP error reportings are enabled.";
 
-    container icmp-error {
+    leaf next-hop-address {
+      type boolean;
       description
-        "Configuration and state for ICMP error messages.";
+        "Controls inclusion of the next-hop address in the ICMP error message payload.";
+    }
+    
+    leaf enabled-egress-interface {
+      type boolean;
+      description
+        "Controls inclusion of the egress interface name in the ICMP error message payload.";
+    }
+    leaf enabled-egress-interface-index {
+      type boolean;
+      description
+        "Controls inclusion of the egress interface index in the ICMP error message payload.";
+    }
+    leaf enabled-ingress-interface {
+      type boolean;
+      description
+        "Controls inclusion of the ingress interface name in the ICMP error message payload.";
+    }
+    leaf enabled-ingress-interface-index {
+      type boolean;
+      description
+        "Controls inclusion of the ingress interface index in the ICMP error message payload.";
+    }
+    leaf enabled-egress-sub-interface {
+      type boolean;
+      description
+        "Controls inclusion of the egress sub-interface in the ICMP error message payload.";
+    }
+    leaf enabled-egress-sub-interface-index {
+      type boolean;
+      description
+        "Controls inclusion of the egress sub-interface index in the ICMP error message payload.";
+    }
+    leaf enabled-ingress-sub-interface {
+      type boolean;
+      description
+        "Controls inclusion of the ingress sub-interface in the ICMP error message payload.";
+    }
+    leaf enabled-ingress-sub-interface-index {
+      type boolean;
+      description
+        "Controls inclusion of the ingress sub-interface index in the ICMP error message payload.";
+    }
+    leaf enabled-ingress-mtu {
+      type boolean;
+      description
+        "Controls inclusion of the ingress interface MTU in the ICMP error message payload.";
+    }
+    leaf enabled-egress-mtu {
+      type boolean;
+      description
+        "Controls inclusion of the egress interface MTU in the ICMP error message payload.";
+    }
+  }
 
-      container config {
+  // --- Grouping for State Data and Counters ---
+
+  grouping icmp-error-state-data {
+    description "Operational state and counters for ICMP error messages.";
+
+    // The state flags container explicitly requested
+    container icmp-error-state-flags {
+      config false;
+      description "Operational state of the ICMP extension feature flags.";
+      // Re-use the feature flags to create the operational state
+      uses icmp-error-flags;
+    }
+    
+    // The counters container
+    container counters {
+      config false;
+      description
+        "Operational counters related to ICMP error messages.";
+        
+      leaf total-messages-sent {
+        type oc-yang:counter64;
         description
-          "Configuration parameters for ICMP error extensions.";
-        leaf enabled {
-          type boolean;
-          default "true";
-          description
-            "Enables the generation of ICMP error extention messages.";
-        }
-        leaf enabled-egress-intf {
-          type boolean;
-          description
-            "Includes the egress interface in the ICMP error message payload.";
-        }
-        leaf enabled-egress-intf-index {
-          type boolean;
-          description
-            "Includes the egress interface index in the ICMP error message payload.";
-        }
-        leaf enabled-ingress-intf {
-          type boolean;
-          description
-            "Includes the ingress interface in the ICMP error message payload.";
-        }
-        leaf enabled-ingress-intf-index {
-          type boolean;
-          description
-            "Includes the ingress interface index in the ICMP error message payload.";
-        }
-        leaf enabled-ingress-mtu {
-          type boolean;
-          description
-            "Includes the ingress interface MTU in the ICMP error message payload.";
-        }
-        leaf enabled-egress-mtu {
-          type boolean;
-          description
-            "Includes the egress interface MTU in the ICMP error message payload.";
-        }
+          "Total number of ICMP error messages successfully generated and sent.";
       }
-
-      container state {
-        config false;
+      leaf total-error-pkts {
+        type oc-yang:counter64;
         description
-          "Operational state for ICMP error messages, including counters.";
-        leaf enabled {
-          type boolean;
-          description
-            "Operational state of ICMP error message generation.";
-        }
-        leaf enabled-egress-intf {
-          type boolean;
-          description
-            "Operational state of egress interface inclusion.";
-        }
-        leaf enabled-egress-intf-index {
-          type boolean;
-          description
-            "Operational state of egress interface index inclusion.";
-        }
-        leaf enabled-ingress-intf {
-          type boolean;
-          description
-            "Operational state of ingress interface inclusion.";
-        }
-        leaf enabled-ingress-intf-index {
-          type boolean;
-          description
-            "Operational state of ingress interface index inclusion.";
-        }
-        leaf enabled-ingress-mtu {
-          type boolean;
-          description
-            "Operational state of ingress MTU inclusion.";
-        }
-        leaf enabled-egress-mtu {
-          type boolean;
-          description
-            "Operational state of egress MTU inclusion.";
-        }
-        leaf next-hop-address {
-          type boolean;
-          description
-            "Indicates if the next-hop address is included in the ICMP error message.";
-        }
-        leaf total-messages-sent {
-          type oc-yang:counter64;
-          description
-            "Total number of ICMP error messages sent.";
-        }
-        leaf total-error-pkts {
-          type oc-yang:counter64;
-          description
-            "Total number of packets that caused an ICMP error message to be sent.";
-        }
-        leaf total-discard-pkts {
-          type oc-yang:counter64;
-          description
-            "Total number of packets that were discarded due to an error, but no ICMP error message was sent.";
-        }
+          "Total number of packets that caused an ICMP error message to be generated (i.e., bad checksum, invalid type/code).";
       }
-
-      container extension {
+      leaf total-discard-pkts {
+        type oc-yang:counter64;
         description
-          "Additional ICMP error message extensions.";
-        container config {
-          description
-            "Configuration for extended ICMP parameters.";
-          leaf enable-egress-sub-intf {
-            type boolean;
-            description
-              "Enables the inclusion of egress sub-interface information.";
-          }
-          leaf enable-egress-sub-intf-index {
-            type boolean;
-            description
-              "Enables the inclusion of egress sub-interface index.";
-          }
-          leaf enable-ingress-sub-intf {
-            type boolean;
-            description
-              "Enables the inclusion of ingress sub-interface information.";
-          }
-          leaf enable-ingress-sub-intf-index {
-            type boolean;
-            description
-              "Enables the inclusion of ingress sub-interface index.";
-          }
-        }
-        container state {
-          config false;
-          description
-            "Operational state for extended ICMP parameters.";
-          leaf enable-egress-sub-intf {
-            type boolean;
-            description
-              "Operational state of egress sub-interface inclusion.";
-          }
-          leaf enable-egress-sub-intf-index {
-            type boolean;
-            description
-              "Operational state of egress sub-interface index inclusion.";
-          }
-          leaf enable-ingress-sub-intf {
-            type boolean;
-            description
-              "Operational state of ingress sub-interface inclusion.";
-          }
-          leaf enable-ingress-sub-intf-index {
-            type boolean;
-            description
-              "Operational state of ingress sub-interface index inclusion.";
-          }
-        }
+          "Total number of packets that were discarded due to an error, but no ICMP error message was sent (e.g., rate-limited, buffer overflow).";
       }
     }
+  }
+  
+  // --- Augmentations to openconfig-system ---
+
+  augment "/oc-sys:system/oc-sys:icmp/oc-sys:icmp-error/oc-sys:config" {
+    description 
+      "Add configuration flags for ICMP extensions (RFC 5837) to system ICMP config.";
+    // Use the core flags directly in the config container
+    uses icmp-error-flags;
+  }
+
+  augment "/oc-sys:system/oc-sys:icmp/oc-sys:icmp-error/oc-sys:state" {
+    config false;
+    description 
+      "Add operational state data and counters for ICMP extensions to system ICMP state.";
+    
+    // Use the explicit state grouping, which includes the icmp-error-state-flags container
+    uses icmp-error-state-data;
   }
 }
